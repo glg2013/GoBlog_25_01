@@ -33,7 +33,29 @@ func articlesIndexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func articlesStoreHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "创建新文章")
+	fmt.Fprint(w, "创建新文章-获取post的数据")
+
+	/*
+		// 使用 r.ParseForm() 解析表单数据
+		err := r.ParseForm()
+		if err != nil {
+			// 解析错误，这里应该有错误处理
+			fmt.Fprint(w, "请提供正确的数据")
+			return
+		}
+
+		title := r.PostForm.Get("title")
+
+		fmt.Fprintf(w, "POST PostForm: %v <br>", r.PostForm)
+		fmt.Fprintf(w, "POST Form: %v <br>", r.Form)
+		fmt.Fprintf(w, "title 的值为：%v", title)
+	*/
+
+	// 直接使用获取表单数据的方法
+	fmt.Fprintf(w, "r.Form 中 title 的值为: %v <br>", r.FormValue("title"))
+	fmt.Fprintf(w, "r.PostForm 中 title 的值为: %v <br>", r.PostFormValue("title"))
+	fmt.Fprintf(w, "r.Form 中 test 的值为: %v <br>", r.FormValue("test"))
+	fmt.Fprintf(w, "r.PostForm 中 test 的值为: %v <br>", r.PostFormValue("test"))
 }
 
 func forceHTMLMiddleware(next http.Handler) http.Handler {
@@ -65,7 +87,7 @@ func articlesCreateHandler(w http.ResponseWriter, r *http.Request) {
     <title>创建文章 - 我的技术博客</title>
 </head>
 <body>
-    <form action="%s" method="POST">
+    <form action="%s?test=data" method="POST">
         <p><input type="text" name="title" placeholder="文章标题"><p>
         <p><textarea name="body" placeholder="文章内容"></textarea><p>
         <p><button type="submit">发布文章</button><p>
@@ -74,7 +96,7 @@ func articlesCreateHandler(w http.ResponseWriter, r *http.Request) {
 </html>
 `
 	storeURL, _ := router.Get("articles.store").URL()
-	fmt.Println(storeURL, " 看看这里获取的url 是什么")
+	//fmt.Println(storeURL, " 看看这里获取的url 是什么")
 	fmt.Fprintf(w, html, storeURL)
 }
 
