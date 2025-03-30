@@ -52,8 +52,8 @@ func initDB() {
 	db.SetConnMaxLifetime(time.Minute * 5)
 
 	// 尝试连接，失败会报错
-	//err = db.Ping()
-	//checkError(err)
+	err = db.Ping()
+	checkError(err)
 }
 
 func checkError(err error) {
@@ -205,10 +205,27 @@ func articlesCreateHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// 创建博客相关的表
+func createTables() {
+	createArticlesSQL := `
+    	CREATE TABLE IF NOT EXISTS articles(
+    	    id bigint(20) PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    	    title varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+    	    body longtext COLLATE utf8mb4_unicode_ci,
+    	);
+    `
+
+	_, err := db.Exec(createArticlesSQL)
+	checkError(err)
+
+}
+
 func main() {
 
 	// 初始化数据库
 	initDB()
+	// 创建表
+	createTables()
 
 	router.HandleFunc("/", homeHandler).Methods("GET").Name("home")
 
