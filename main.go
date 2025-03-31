@@ -180,91 +180,6 @@ func validateArticleFormData(title, body string) map[string]string {
 	return errors
 }
 
-func articlesStoreHandler(w http.ResponseWriter, r *http.Request) {
-	//fmt.Fprint(w, "创建新文章-获取post的数据")
-
-	/*
-		// 使用 r.ParseForm() 解析表单数据
-		err := r.ParseForm()
-		if err != nil {
-			// 解析错误，这里应该有错误处理
-			fmt.Fprint(w, "请提供正确的数据")
-			return
-		}
-
-		title := r.PostForm.Get("title")
-
-		fmt.Fprintf(w, "POST PostForm: %v <br>", r.PostForm)
-		fmt.Fprintf(w, "POST Form: %v <br>", r.Form)
-		fmt.Fprintf(w, "title 的值为：%v", title)
-	*/
-
-	/*
-		// 直接使用获取表单数据的方法
-		fmt.Fprintf(w, "r.Form 中 title 的值为: %v <br>", r.FormValue("title"))
-		fmt.Fprintf(w, "r.PostForm 中 title 的值为: %v <br>", r.PostFormValue("title"))
-		fmt.Fprintf(w, "r.Form 中 test 的值为: %v <br>", r.FormValue("test"))
-		fmt.Fprintf(w, "r.PostForm 中 test 的值为: %v <br>", r.PostFormValue("test"))
-	*/
-
-	title := r.PostFormValue("title")
-	body := r.PostFormValue("body")
-
-	// 验证
-	errors := validateArticleFormData(title, body)
-
-	// 检查是否有错误
-	if len(errors) == 0 {
-		/*
-			fmt.Fprint(w, "验证通过！<br>")
-			fmt.Fprintf(w, "title 的值为：%v <br>", title)
-			fmt.Fprintf(w, "title 的长度为：%v <br>", utf8.RuneCountInString(title))
-			fmt.Fprintf(w, "body 的值为：%v <br>", body)
-			fmt.Fprintf(w, "body 的长度为：%v <br>", utf8.RuneCountInString(body))
-		*/
-
-		// 保存数据到数据库
-		lastInsertID, err := saveArticleToDB(title, body)
-		if lastInsertID > 0 {
-			// fmt.Fprint(w, "插入成功，ID 为"+strconv.FormatInt(lastInsertID, 10))
-
-			//// 尝试跳转到新创建的文章详情页
-			//showURL, _ := router.Get("articles.show").URL("id", strconv.FormatInt(lastInsertID, 10))
-			//http.Redirect(w, r, showURL.String(), http.StatusFound)
-
-			// 尝试跳转到文章列表页
-			http.Redirect(w, r, "/articles", http.StatusFound)
-		} else {
-			logger.LogError(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprint(w, "500 服务器内部错误")
-		}
-
-	} else {
-		//fmt.Fprintf(w, "有错误发生，errors 的值为: %v <br>", errors)
-
-		storeURL, _ := router.Get("articles.store").URL()
-
-		data := ArticlesFormData{
-			Title:  title,
-			Body:   body,
-			URL:    storeURL,
-			Errors: errors,
-		}
-		tmpl, err := template.ParseFiles("resources/views/articles/create.gohtml")
-		if err != nil {
-			panic(err)
-		}
-
-		err = tmpl.Execute(w, data)
-		if err != nil {
-			panic(err)
-		}
-
-	}
-
-}
-
 func saveArticleToDB(title, body string) (int64, error) {
 
 	// 变量初始化
@@ -318,27 +233,6 @@ func removeTrailingSlash(next http.Handler) http.Handler {
 		// 2.将请求传递下去
 		next.ServeHTTP(w, r)
 	})
-}
-
-func articlesCreateHandler(w http.ResponseWriter, r *http.Request) {
-	storeURL, _ := router.Get("articles.store").URL()
-	//fmt.Println(storeURL, " 看看这里获取的url 是什么")
-	data := ArticlesFormData{
-		Title:  "",
-		Body:   "",
-		URL:    storeURL,
-		Errors: nil,
-	}
-	tmpl, err := template.ParseFiles("resources/views/articles/create.gohtml")
-	if err != nil {
-		panic(err)
-	}
-
-	err = tmpl.Execute(w, data)
-	if err != nil {
-		panic(err)
-	}
-
 }
 
 func articlesDeleteHandler(w http.ResponseWriter, r *http.Request) {
@@ -400,11 +294,6 @@ func main() {
 	bootstrap.SetupDB()
 	// 初始化路由
 	router = bootstrap.SetupRoute()
-
-	router.HandleFunc("/articles", articlesStoreHandler).Methods("POST").Name("articles.store")
-
-	// 创建博客相关路由
-	router.HandleFunc("/articles/create", articlesCreateHandler).Methods("GET").Name("articles.create")
 
 	// 编辑文章
 	router.HandleFunc("/articles/{id:[0-9]+}/edit", articlesEditHandler).Methods("GET").Name("articles.edit")
