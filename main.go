@@ -3,8 +3,8 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
+	"goblog/pkg/database"
 	"goblog/pkg/logger"
 	"goblog/pkg/route"
 	"goblog/pkg/types"
@@ -13,7 +13,6 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
-	"time"
 	"unicode/utf8"
 )
 
@@ -58,37 +57,6 @@ func (a Article) Delete() (rowsAffected int64, err error) {
 	}
 
 	return 0, nil
-}
-
-func initDB() {
-	var err error
-	config := mysql.Config{
-		User:                 "homestead",
-		Passwd:               "secret",
-		Addr:                 "192.168.56.56:3306",
-		Net:                  "tcp",
-		DBName:               "goblog",
-		AllowNativePasswords: true,
-	}
-
-	// 打印信息
-	// fmt.Println("Connecting to database ...", config.FormatDSN())
-	// Connecting to database ... homestead:secret@tcp(192.168.56.56:3306)/goblog?checkConnLiveness=false&maxAllowedPacket=0
-
-	// 准备数据库连接池
-	db, err = sql.Open("mysql", config.FormatDSN())
-	logger.LogError(err)
-
-	// 设置最大连接数
-	db.SetMaxOpenConns(25)
-	// 设置最大空闲连接数
-	db.SetMaxIdleConns(25)
-	// 设置每个连接的过期时间
-	db.SetConnMaxLifetime(time.Minute * 5)
-
-	// 尝试连接，失败会报错
-	err = db.Ping()
-	logger.LogError(err)
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
@@ -469,20 +437,6 @@ func articlesCreateHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// 创建博客相关的表
-func createTables() {
-	createArticlesSQL := `
-    	CREATE TABLE IF NOT EXISTS articles(
-    	    id bigint(20) PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    	    title varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-    	    body longtext COLLATE utf8mb4_unicode_ci
-    	);
-    `
-
-	_, err := db.Exec(createArticlesSQL)
-	logger.LogError(err)
-}
-
 func articlesDeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 	// 1. 获取 URL 参数
@@ -530,10 +484,9 @@ func articlesDeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 
-	// 初始化数据库
-	initDB()
-	// 创建表
-	createTables()
+	// 初始话数据库
+	database.Initialize()
+	db = database.DB
 
 	// 初始化路由
 	route.Initialize()
