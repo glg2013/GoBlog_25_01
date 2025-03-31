@@ -440,6 +440,7 @@ func main() {
 	database.Initialize()
 	db = database.DB
 
+	bootstrap.SetupDB()
 	// 初始化路由
 	router = bootstrap.SetupRoute()
 
