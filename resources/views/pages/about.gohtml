@@ -1,0 +1,43 @@
+{{define "title"}}
+  关于 —— 我的技术博客
+{{end}}
+
+{{define "main"}}
+  <div class="col-md-9 blog-main">
+    <div class="blog-post">
+      <h2 class="blog-post-title">关于我</h2>
+
+      <div class="d-flex mb-4">
+        <img src="/images/avatar/knight.jpg" alt="头像" class="rounded-circle me-3" width="100" height="100">
+        <div>
+          <p>你好，我是[你的名字]，一名[你的职业，如全栈开发工程师/技术主管等]。</p>
+          <p>热爱编程和技术分享，专注于[你的技术领域，如Web开发、云计算、AI等]。</p>
+        </div>
+      </div>
+
+      <h3>技术栈</h3>
+      <ul>
+        <li>编程语言: Go/JavaScript/Python等</li>
+        <li>前端: HTML/CSS/JavaScript, React/Vue等</li>
+        <li>后端: Gin/Beego, MySQL/PostgreSQL, Redis等</li>
+        <li>DevOps: Docker, Kubernetes, CI/CD等</li>
+      </ul>
+
+      <h3>联系我</h3>
+      <ul class="list-unstyled">
+        <li><i class="bi bi-envelope me-2"></i> 邮箱: your.email@example.com</li>
+        <li><i class="bi bi-github me-2"></i> GitHub: github.com/yourusername</li>
+        <li><i class="bi bi-twitter me-2"></i> Twitter: @yourhandle</li>
+      </ul>
+
+      <h3>关于本站</h3>
+      <p>本站建立于2023年，使用Go语言开发，主要分享:</p>
+      <ul>
+        <li>编程技术教程与心得</li>
+        <li>项目开发经验</li>
+        <li>技术书籍阅读笔记</li>
+        <li>行业见解与思考</li>
+      </ul>
+    </div>
+  </div><!-- /.blog-main -->
+{{end}}
