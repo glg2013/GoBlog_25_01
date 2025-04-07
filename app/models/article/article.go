@@ -3,6 +3,7 @@ package article
 
 import (
 	"goblog/app/models"
+	"goblog/app/models/category"
 	"goblog/app/models/user"
 	"goblog/pkg/route"
 	"strconv"
@@ -19,6 +20,7 @@ type Article struct {
 	User   user.User
 
 	CategoryID uint64 `gorm:"not null;default:4;index"`
+	Category   category.Category
 }
 
 // Link 方法用来生成文章链接
